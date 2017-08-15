@@ -1,30 +1,46 @@
 // @flow
 
 import React, { Component } from 'react';
-import Button from './components/Button/Button';
-import logo from './logo.svg';
+import PeopleList from './components/PeopleList/PeopleList';
+import PersonForm from './components/PersonForm/PersonForm';
+
 import './App.css';
 
-function concat(a: string, b: string) {
-  return a + b;
-}
-
-const together = concat('1', 'b');
-
 class App extends Component {
+  state: {
+    people: { name: string, height: number }[],
+  };
+
+  onAddPerson: Function;
+
+  constructor(props: Object) {
+    super(props);
+
+    this.state = {
+      people: [],
+    };
+
+    this.onAddPerson = this.onAddPerson.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        people: [{ name: 'wilma', height: 68 }],
+      });
+    }, 2000);
+  }
+
+  onAddPerson(person: Object) {
+    console.log('added person', person);
+    this.setState({ people: this.state.people.concat(person) });
+  }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>
-            Welcome to React {together}
-          </h2>
-          <Button>Yo yo</Button>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <PersonForm onAdd={this.onAddPerson} />
+        <PeopleList people={this.state.people} />
       </div>
     );
   }
