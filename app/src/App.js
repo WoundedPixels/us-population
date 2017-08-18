@@ -1,6 +1,9 @@
 // @flow
 
 import React, { Component } from 'react';
+import request from 'superagent';
+
+import Person from './model/Person';
 import PeopleList from './components/PeopleList/PeopleList';
 import PersonForm from './components/PersonForm/PersonForm';
 
@@ -8,10 +11,10 @@ import './App.css';
 
 class App extends Component {
   state: {
-    people: { name: string, height: number }[],
+    people: Person[],
   };
 
-  onAddPerson: Function;
+  addPerson: Function;
 
   constructor(props: Object) {
     super(props);
@@ -20,26 +23,27 @@ class App extends Component {
       people: [],
     };
 
-    this.onAddPerson = this.onAddPerson.bind(this);
+    this.addPerson = this.addPerson.bind(this);
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        people: [{ name: 'wilma', height: 68 }],
-      });
-    }, 2000);
+    request.get('/data/people.json').then(result => {
+      if (result && result.body && Array.isArray(result.body)) {
+        result.body.forEach(person => {
+          this.addPerson(person);
+        });
+      }
+    });
   }
 
-  onAddPerson(person: Object) {
-    console.log('added person', person);
+  addPerson(person: Person) {
     this.setState({ people: this.state.people.concat(person) });
   }
 
   render() {
     return (
       <div className="App">
-        <PersonForm onAdd={this.onAddPerson} />
+        <PersonForm onAdd={this.addPerson} />
         <PeopleList people={this.state.people} />
       </div>
     );

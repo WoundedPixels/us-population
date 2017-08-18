@@ -1,13 +1,12 @@
 // @flow
 
 import React, { Component } from 'react';
+import Person from '../../model/Person';
+
 import './PersonForm.css';
 
 class PersonForm extends Component {
-  state: {
-    name: string,
-    height: number,
-  };
+  state: Person;
 
   handleSubmit: Function;
   handleInputChange: Function;
@@ -15,10 +14,7 @@ class PersonForm extends Component {
   constructor(props: Object) {
     super(props);
 
-    this.state = {
-      name: '',
-      height: 0,
-    };
+    this.state = new Person('', 0);
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -28,14 +24,15 @@ class PersonForm extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    const converted = target.name === 'height' ? parseInt(value, 10) : value;
 
     this.setState({
-      [name]: value,
+      [name]: converted,
     });
   }
 
   handleSubmit(event: Object) {
-    this.props.onAdd({ name: this.state.name, height: this.state.height });
+    this.props.onAdd(new Person(this.state.name, this.state.height));
     event.preventDefault();
   }
 
