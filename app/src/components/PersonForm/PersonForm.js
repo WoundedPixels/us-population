@@ -3,6 +3,8 @@
 import React, { Component } from 'react';
 import Person from '../../model/Person';
 
+import Button from '../Button/Button';
+
 import './PersonForm.css';
 
 class PersonForm extends Component {
@@ -39,7 +41,7 @@ class PersonForm extends Component {
   render() {
     return (
       <div className="PersonForm">
-        <form onSubmit={this.handleSubmit}>
+        <div>
           <label>
             Name:<input
               type="text"
@@ -56,8 +58,8 @@ class PersonForm extends Component {
               onChange={this.handleInputChange}
             />
           </label>
-          <input type="submit" value="Add" />
-        </form>
+          <Button onClick={this.handleSubmit}>Add</Button>
+        </div>
       </div>
     );
   }
