@@ -1,8 +1,24 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import renderer from 'react-test-renderer';
 import Button from './Button';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Button>Hi</Button>, div);
+const fpp = '';
+
+it('no callback matches snapshot', () => {
+  const tree = renderer.create(<Button>Hi</Button>).toJSON();
+  expect(tree).toMatchSnapshot();
+
+  const someOtherJSON = { flavor: 'fudge' };
+  expect(someOtherJSON).toMatchSnapshot();
+});
+
+it('with callback matches snapshot', () => {
+  const cb = () => {};
+  const tree = renderer.create(<Button onClick={cb}>Hi</Button>).toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
+it('arbitrary json matches snapshot', () => {
+  const someOtherJSON = { flavor: 'fudge' };
+  expect(someOtherJSON).toMatchSnapshot();
 });

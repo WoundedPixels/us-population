@@ -1,30 +1,50 @@
 // @flow
 
 import React, { Component } from 'react';
-import Button from './components/Button/Button';
-import logo from './logo.svg';
+import request from 'superagent';
+
+import Person from './model/Person';
+import PeopleList from './components/PeopleList/PeopleList';
+import PersonForm from './components/PersonForm/PersonForm';
+
 import './App.css';
 
-function concat(a: string, b: string) {
-  return a + b;
-}
-
-const together = concat('1', 'b');
-
 class App extends Component {
+  state: {
+    people: Person[],
+  };
+
+  addPerson: Function;
+
+  constructor(props: Object) {
+    super(props);
+
+    this.state = {
+      people: [],
+    };
+
+    this.addPerson = this.addPerson.bind(this);
+  }
+
+  componentDidMount() {
+    request.get('/data/people.json').then(result => {
+      if (result && result.body && Array.isArray(result.body)) {
+        result.body.forEach(person => {
+          this.addPerson(person);
+        });
+      }
+    });
+  }
+
+  addPerson(person: Person) {
+    this.setState({ people: this.state.people.concat(person) });
+  }
+
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>
-            Welcome to React {together}
-          </h2>
-          <Button>Yo yo</Button>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <PersonForm onAdd={this.addPerson} />
+        <PeopleList people={this.state.people} />
       </div>
     );
   }
