@@ -1,0 +1,80 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Button with some emoji 1`] = `
+<button
+  className="Button"
+  onClick={[Function]}
+>
+  HI 😀 😎 There 
+</button>
+`;
+
+exports[`Storyshots Button with text 1`] = `
+<button
+  className="Button"
+  onClick={[Function]}
+>
+  Hello Button
+</button>
+`;
+
+exports[`Storyshots PeopleList empty 1`] = `
+<div
+  className="PeopleList"
+/>
+`;
+
+exports[`Storyshots PeopleList some people 1`] = `
+<div
+  className="PeopleList"
+>
+  <div>
+    fred
+     
+    72
+  </div>
+  <div>
+    wilma
+     
+    68
+  </div>
+  <div>
+    barney
+     
+    44
+  </div>
+</div>
+`;
+
+exports[`Storyshots PersonForm empty 1`] = `
+<div
+  className="PersonForm"
+>
+  <div>
+    <label>
+      Name:
+      <input
+        name="name"
+        onChange={[Function]}
+        type="text"
+        value=""
+      />
+    </label>
+    <label>
+      Height:
+      <input
+        name="height"
+        onChange={[Function]}
+        type="text"
+        value={0}
+      />
+    </label>
+    <button
+      className="Button"
+      onClick={[Function]}
+    >
+      Add
+    </button>
+  </div>
+</div>
+`;
