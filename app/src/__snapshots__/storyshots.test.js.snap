@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Storyshots App The App 1`] = `
+<div
+  id="App"
+>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    className="Map"
+    height={617.5}
+    width="950"
+  />
+</div>
+`;
+
 exports[`Storyshots Button with some emoji 1`] = `
 <button
   className="Button"
@@ -18,63 +39,63 @@ exports[`Storyshots Button with text 1`] = `
 </button>
 `;
 
-exports[`Storyshots PeopleList empty 1`] = `
+exports[`Storyshots Map big and small 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    className="Map"
+    height={520}
+    width="800"
+  />
+  <svg
+    className="Map"
+    height={260}
+    width="400"
+  />
+</div>
+`;
+
+exports[`Storyshots Map empty 1`] = `
+<div>
+  Loading
+</div>
+`;
+
+exports[`Storyshots Map populated 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    className="Map"
+    height={585}
+    width="900"
+  />
+</div>
+`;
+
+exports[`Storyshots Tooltip empty 1`] = `
 <div
-  className="PeopleList"
+  className="Tooltip"
+  id="tooltip"
+  style={
+    Object {
+      "display": "none",
+    }
+  }
 />
-`;
-
-exports[`Storyshots PeopleList some people 1`] = `
-<div
-  className="PeopleList"
->
-  <div>
-    fred
-     
-    72
-  </div>
-  <div>
-    wilma
-     
-    68
-  </div>
-  <div>
-    barney
-     
-    44
-  </div>
-</div>
-`;
-
-exports[`Storyshots PersonForm empty 1`] = `
-<div
-  className="PersonForm"
->
-  <div>
-    <label>
-      Name:
-      <input
-        name="name"
-        onChange={[Function]}
-        type="text"
-        value=""
-      />
-    </label>
-    <label>
-      Height:
-      <input
-        name="height"
-        onChange={[Function]}
-        type="text"
-        value={0}
-      />
-    </label>
-    <button
-      className="Button"
-      onClick={[Function]}
-    >
-      Add
-    </button>
-  </div>
-</div>
 `;
