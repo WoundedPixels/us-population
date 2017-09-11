@@ -2,12 +2,22 @@
 
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import { interpolateBlues } from 'd3-scale-chromatic';
 
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
 import { topoToGeo, enrich } from './DataManipulation';
 
 import './App.css';
+
+const calculateFill = d => {
+  const colorScale = d3.scaleSequential(interpolateBlues);
+  return colorScale(d.properties.populationRatio);
+};
+
+const buildTooltip = d => {
+  return `d.properties: ${JSON.stringify(d.properties)}`;
+};
 
 class App extends Component {
   state: {
@@ -48,6 +58,15 @@ class App extends Component {
           feature.properties.population = populationByState[feature.id];
         });
 
+        const maxStatePopulation = d3.max(statesGeoJSON, feature => {
+          return feature.properties.population;
+        });
+
+        statesGeoJSON.forEach(feature => {
+          feature.properties.populationRatio =
+            feature.properties.population / maxStatePopulation;
+        });
+
         enrich(statesGeoJSON, stateFipsCodes, 'STATE_FIPS', {
           STATE_NAME: 'name',
           STATE_FIPS: 'fipsCode',
@@ -71,8 +90,9 @@ class App extends Component {
         <Tooltip />
         <Map
           width="950"
-          statesGeoJSON={this.state.statesGeoJSON}
-          countiesGeoJSON={this.state.countiesGeoJSON}
+          regionsGeoJSON={this.state.statesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
         />
       </div>
     );
