@@ -9,6 +9,14 @@ import { topoToGeo } from '../../DataManipulation';
 import Map from './Map';
 import Tooltip from '../Tooltip/Tooltip';
 
+const buildTooltip = d => {
+  return 'Static tooltip';
+};
+
+const calculateFill = d => {
+  return 'blue';
+};
+
 const topoJSON = require('../../../public/topo-json/us-10m.json');
 const statesGeoJSON = topoToGeo(topoJSON, 'states');
 const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
@@ -23,8 +31,9 @@ storiesOf('Map', module)
         <Tooltip />
         <Map
           width="900"
-          statesGeoJSON={statesGeoJSON}
-          countiesGeoJSON={countiesGeoJSON}
+          regionsGeoJSON={statesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
         />
       </div>
     );
@@ -35,13 +44,15 @@ storiesOf('Map', module)
         <Tooltip />
         <Map
           width="800"
-          statesGeoJSON={statesGeoJSON}
-          countiesGeoJSON={countiesGeoJSON}
+          regionsGeoJSON={countiesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
         />
         <Map
           width="400"
-          statesGeoJSON={statesGeoJSON}
-          countiesGeoJSON={countiesGeoJSON}
+          regionsGeoJSON={statesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
         />
       </div>
     );

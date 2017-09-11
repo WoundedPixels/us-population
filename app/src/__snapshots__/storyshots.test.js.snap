@@ -1,26 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Storyshots App The App 1`] = `
-<div
-  id="App"
->
-  <div
-    className="Tooltip"
-    id="tooltip"
-    style={
-      Object {
-        "display": "none",
-      }
-    }
-  />
-  <svg
-    className="Map"
-    height={617.5}
-    width="950"
-  />
-</div>
-`;
-
 exports[`Storyshots Button with some emoji 1`] = `
 <button
   className="Button"

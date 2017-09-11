@@ -13,15 +13,12 @@ class Map extends Component {
   updateTooltip: Function;
   clearTooltip: Function;
   node: Object;
-  ready: boolean;
 
   constructor(props: Object) {
     super(props);
     this.update = this.update.bind(this);
     this.updateTooltip = this.updateTooltip.bind(this);
     this.clearTooltip = this.clearTooltip.bind(this);
-
-    this.ready = false;
   }
 
   componentDidMount() {
@@ -33,17 +30,17 @@ class Map extends Component {
 
   init() {
     const node = d3.select(this.node);
-    node.append('g').attr('class', 'states');
-    node.append('g').attr('class', 'counties');
+    node.append('g').attr('class', 'regions');
   }
 
   readyCheck() {
-    this.ready = this.props.statesGeoJSON && this.props.countiesGeoJSON;
-    return this.ready;
+    return (
+      this.props.regionsGeoJSON && Array.isArray(this.props.regionsGeoJSON)
+    );
   }
 
   updateTooltip(d: Object) {
-    Tooltip.update(`d: ${d.id}</br>${JSON.stringify(d.properties)}`);
+    Tooltip.update(this.props.buildTooltip(d));
   }
 
   clearTooltip() {
@@ -56,43 +53,27 @@ class Map extends Component {
     }
 
     const node = d3.select(this.node);
-    if (node.select('g.states').empty()) {
+    if (node.select('g.regions').empty()) {
       this.init();
     }
 
     const scale = this.props.width / 950;
     const path = d3.geoPath();
 
-    const statesG = node
-      .select('g.states')
+    const regionsG = node
+      .select('g.regions')
       .attr('transform', `scale(${scale})`);
 
-    const statePaths = statesG
-      .selectAll('path.state')
-      .data(this.props.statesGeoJSON);
+    const regionPaths = regionsG
+      .selectAll('path.region')
+      .data(this.props.regionsGeoJSON);
 
-    statePaths
+    regionPaths
       .enter()
       .append('path')
-      .attr('class', 'state')
+      .attr('class', 'region')
       .attr('d', path)
-      .on('mouseover', this.updateTooltip)
-      .on('mousemove', this.updateTooltip)
-      .on('mouseleave', this.clearTooltip);
-
-    const countiesG = node
-      .select('g.counties')
-      .attr('transform', `scale(${scale})`);
-
-    const countyPaths = countiesG
-      .selectAll('path.county')
-      .data(this.props.countiesGeoJSON);
-
-    countyPaths
-      .enter()
-      .append('path')
-      .attr('class', 'county')
-      .attr('d', path)
+      .attr('fill', this.props.calculateFill)
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
