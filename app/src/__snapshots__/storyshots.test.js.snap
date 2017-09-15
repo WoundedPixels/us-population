@@ -18,7 +18,7 @@ exports[`Storyshots Button with text 1`] = `
 </button>
 `;
 
-exports[`Storyshots Map big and small 1`] = `
+exports[`Storyshots Map empty 1`] = `
 <div>
   <div
     className="Tooltip"
@@ -30,21 +30,15 @@ exports[`Storyshots Map big and small 1`] = `
     }
   />
   <svg
-    className="Map"
-    height={520}
-    width="800"
-  />
-  <svg
-    className="Map"
-    height={260}
-    width="400"
-  />
-</div>
-`;
-
-exports[`Storyshots Map empty 1`] = `
-<div>
-  Loading
+    height="500"
+    width="950"
+  >
+    <text
+      transform="translate(50,50)"
+    >
+      Loading
+    </text>
+  </svg>
 </div>
 `;
 
@@ -60,10 +54,13 @@ exports[`Storyshots Map populated 1`] = `
     }
   />
   <svg
-    className="Map"
-    height={585}
-    width="900"
-  />
+    height="500"
+    width="950"
+  >
+    <g
+      className="Map"
+    />
+  </svg>
 </div>
 `;
 
@@ -77,4 +74,43 @@ exports[`Storyshots Tooltip empty 1`] = `
     }
   }
 />
+`;
+
+exports[`Storyshots ZoomableGroup with no children 1`] = `
+<svg
+  className="ZoomableGroup"
+  height={undefined}
+  width={undefined}
+>
+  <g
+    transform="scale(1)"
+  />
+</svg>
+`;
+
+exports[`Storyshots ZoomableGroup with one Map 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    className="ZoomableGroup"
+    height="500"
+    width="1000"
+  >
+    <g
+      transform="scale(1)"
+    >
+      <g
+        className="Map"
+      />
+    </g>
+  </svg>
+</div>
 `;

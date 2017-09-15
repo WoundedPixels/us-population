@@ -6,7 +6,8 @@ import { linkTo } from '@storybook/addon-links';
 
 import { topoToGeo } from '../../DataManipulation';
 
-import Map from './Map';
+import ZoomableGroup from './ZoomableGroup';
+import Map from '../Map/Map';
 import Tooltip from '../Tooltip/Tooltip';
 
 const buildTooltip = d => {
@@ -21,27 +22,19 @@ const topoJSON = require('../../../public/topo-json/us-10m.json');
 const statesGeoJSON = topoToGeo(topoJSON, 'states');
 const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
 
-storiesOf('Map', module)
-  .addDecorator(story =>
+storiesOf('ZoomableGroup', module)
+  .add('with no children', () => <ZoomableGroup />)
+  .add('with one Map', () =>
     <div>
       <Tooltip />
-      <svg width="950" height="500">
-        {story()}
-      </svg>
+      <ZoomableGroup width="1000" height="500">
+        <Map
+          regionsGeoJSON={statesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
+          minScale="0"
+          maxScale="1000000"
+        />
+      </ZoomableGroup>
     </div>,
-  )
-  .add('empty', () => {
-    return <Map width="950" />;
-  })
-  .add('populated', () => {
-    return (
-      <Map
-        regionsGeoJSON={statesGeoJSON}
-        buildTooltip={buildTooltip}
-        calculateFill={calculateFill}
-        minScale="0"
-        maxScale="1000000"
-        scale="1"
-      />
-    );
-  });
+  );
