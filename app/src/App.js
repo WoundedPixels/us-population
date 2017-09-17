@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import * as d3 from 'd3';
 import { interpolateBlues } from 'd3-scale-chromatic';
 
+import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
 import { topoToGeo, enrich } from './DataManipulation';
@@ -13,6 +14,10 @@ import './App.css';
 const calculateFill = d => {
   const colorScale = d3.scaleSequential(interpolateBlues);
   return colorScale(d.properties.populationRatio);
+};
+
+const emptyFill = () => {
+  return 'none';
 };
 
 const buildTooltip = d => {
@@ -85,15 +90,28 @@ class App extends Component {
   }
 
   render() {
+    const width = 950;
+    const height = 0.65 * width;
+
     return (
       <div id="App">
         <Tooltip />
-        <Map
-          width="950"
-          regionsGeoJSON={this.state.statesGeoJSON}
-          buildTooltip={buildTooltip}
-          calculateFill={calculateFill}
-        />
+        <ZoomableGroup width={width} height={height}>
+          <Map
+            regionsGeoJSON={this.state.statesGeoJSON}
+            buildTooltip={buildTooltip}
+            calculateFill={calculateFill}
+            minScale="0"
+            maxScale="2"
+          />
+          <Map
+            regionsGeoJSON={this.state.countiesGeoJSON}
+            buildTooltip={buildTooltip}
+            calculateFill={emptyFill}
+            minScale="2"
+            maxScale="1000000"
+          />
+        </ZoomableGroup>
       </div>
     );
   }

@@ -57,12 +57,9 @@ class Map extends Component {
       this.init();
     }
 
-    const scale = this.props.width / 950;
     const path = d3.geoPath();
 
-    const regionsG = node
-      .select('g.regions')
-      .attr('transform', `scale(${scale})`);
+    const regionsG = node.select('g.regions');
 
     const regionPaths = regionsG
       .selectAll('path.region')
@@ -74,20 +71,27 @@ class Map extends Component {
       .attr('class', 'region')
       .attr('d', path)
       .attr('fill', this.props.calculateFill)
+      .attr('stroke-width', 1.5 / this.props.scale)
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
+
+    regionPaths.attr('stroke-width', 1.5 / this.props.scale);
   }
 
   render() {
-    return this.readyCheck()
-      ? <svg
-          className="Map"
-          ref={node => (this.node = node)}
-          width={this.props.width}
-          height={0.65 * this.props.width}
-        />
-      : <div>Loading</div>;
+    const minScale = +this.props.minScale;
+    const maxScale = +this.props.maxScale;
+    const displayed =
+      this.props.scale >= minScale && this.props.scale <= maxScale;
+
+    if (!this.readyCheck()) {
+      return <text transform="translate(50,50)">Loading</text>;
+    }
+
+    return displayed
+      ? <g className="Map" ref={node => (this.node = node)} />
+      : <g />;
   }
 }
 
