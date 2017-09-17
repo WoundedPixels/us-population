@@ -102,7 +102,7 @@ class App extends Component {
             buildTooltip={buildTooltip}
             calculateFill={calculateFill}
             minScale="0"
-            maxScale="2"
+            maxScale="1000000"
           />
           <Map
             regionsGeoJSON={this.state.countiesGeoJSON}

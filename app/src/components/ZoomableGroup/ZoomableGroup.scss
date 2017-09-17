@@ -1,4 +1,7 @@
 @import '../../styles/colors.scss';
 
 .ZoomableGroup {
+  .hidden {
+    display: none;
+  }
 }

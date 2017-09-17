@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component } from 'react';
+import classNames from 'classnames';
 import * as d3 from 'd3';
 
 import Tooltip from '../Tooltip/Tooltip';
@@ -26,6 +27,13 @@ class Map extends Component {
   }
   componentDidUpdate() {
     this.update();
+  }
+
+  shouldComponentUpdate(nextProps: Object) {
+    if (!this.readyCheck()) {
+      return true;
+    }
+    return this.props.scale !== nextProps.scale;
   }
 
   init() {
@@ -80,18 +88,17 @@ class Map extends Component {
   }
 
   render() {
+    console.log('Map render');
     const minScale = +this.props.minScale;
     const maxScale = +this.props.maxScale;
-    const displayed =
-      this.props.scale >= minScale && this.props.scale <= maxScale;
+    const hidden = this.props.scale < minScale || this.props.scale > maxScale;
 
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }
 
-    return displayed
-      ? <g className="Map" ref={node => (this.node = node)} />
-      : <g />;
+    const classnames = classNames('Map', { hidden: hidden });
+    return <g className={classnames} ref={node => (this.node = node)} />;
   }
 }
 
