@@ -6,9 +6,9 @@ import * as d3 from 'd3';
 
 import Tooltip from '../Tooltip/Tooltip';
 
-import './Map.css';
+import './CentroidCircleMap.css';
 
-class Map extends Component {
+class CentroidCircleMap extends Component {
   init: Function;
   update: Function;
   updateTooltip: Function;
@@ -37,8 +37,14 @@ class Map extends Component {
   }
 
   init() {
+    const path = d3.geoPath();
+
     const node = d3.select(this.node);
-    node.append('g').attr('class', 'regions');
+    node.append('g').attr('class', 'bubbles');
+
+    this.props.regionsGeoJSON.forEach(region => {
+      region.properties.centroid = path.centroid(region);
+    });
   }
 
   readyCheck() {
@@ -61,34 +67,42 @@ class Map extends Component {
     }
 
     const node = d3.select(this.node);
-    if (node.select('g.regions').empty()) {
+    if (node.select('g.bubbles').empty()) {
       this.init();
     }
 
-    const path = d3.geoPath();
+    const bubblesG = node.select('g.bubbles');
 
-    const regionsG = node.select('g.regions');
-
-    const regionPaths = regionsG
-      .selectAll('path.region')
+    const circles = bubblesG
+      .selectAll('circle.bubble')
       .data(this.props.regionsGeoJSON);
 
-    regionPaths
+    circles
       .enter()
-      .append('path')
-      .attr('class', 'region')
-      .attr('d', path)
+      .append('circle')
+      .attr('class', 'bubble')
+      .attr('cx', d => {
+        return d.properties.centroid[0];
+      })
+      .attr('cy', d => {
+        return d.properties.centroid[1];
+      })
+      .attr('r', d => {
+        return (
+          Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
+        );
+      })
       .attr('fill', this.props.calculateFill)
-      .attr('stroke-width', 1.5 / this.props.scale)
+      // .attr('stroke-width', 1 / this.props.scale)
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
 
-    regionPaths.attr('stroke-width', 1.5 / this.props.scale);
+    // circles.attr('stroke-width', 1.5 / this.props.scale);
   }
 
   render() {
-    console.log('Map render');
+    console.log('CentroidCircleMap render');
     const minScale = +this.props.minScale;
     const maxScale = +this.props.maxScale;
     const hidden = this.props.scale < minScale || this.props.scale > maxScale;
@@ -97,9 +111,9 @@ class Map extends Component {
       return <text transform="translate(50,50)">Loading</text>;
     }
 
-    const classnames = classNames('Map', { hidden: hidden });
+    const classnames = classNames('CentroidCircleMap', { hidden: hidden });
     return <g className={classnames} ref={node => (this.node = node)} />;
   }
 }
 
-export default Map;
+export default CentroidCircleMap;

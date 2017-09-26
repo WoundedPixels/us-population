@@ -1,12 +1,13 @@
 // @flow
 
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import * as d3 from 'd3';
 
 import './Tooltip.css';
 
 class Tooltip extends Component {
-  static update(content: string) {
+  static update(content: Object = <empty />) {
     const tooltip = d3.select('div#tooltip');
 
     const mouse = { x: d3.event.pageX, y: d3.event.pageY };
@@ -19,10 +20,11 @@ class Tooltip extends Component {
     );
 
     tooltip
-      .html(content)
       .style('left', `${left}px`)
       .style('top', `${mouse.y - tooltipDimensions.height - 5}px`)
-      .style('display', content === '' ? 'none' : 'block');
+      .style('display', content.type !== 'empty' ? 'block' : 'none');
+
+    ReactDOM.render(content, document.getElementById('tooltip'));
   }
 
   render() {

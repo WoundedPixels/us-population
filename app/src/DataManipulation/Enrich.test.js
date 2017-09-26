@@ -25,10 +25,7 @@ it('tolerates missing values', () => {
     },
   ];
 
-  enrich(statesGeoJSON, data, 'STATE_FIPS', {
-    STATE_NAME: 'name',
-    STATE_FIPS: 'fipsCode',
-  });
+  enrich(statesGeoJSON, data, 'STATE_FIPS');
 
-  expect(statesGeoJSON[0].properties.name).toEqual('Arkansas');
+  expect(statesGeoJSON[0].properties.STATE_NAME).toEqual('Arkansas');
 });

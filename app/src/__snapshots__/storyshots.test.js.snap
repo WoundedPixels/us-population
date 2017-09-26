@@ -76,6 +76,37 @@ exports[`Storyshots Tooltip empty 1`] = `
 />
 `;
 
+exports[`Storyshots Tooltip formated 1`] = `
+<ul>
+  <li>
+    <span
+      className="label"
+    >
+      Name
+      :
+    </span>
+    <span
+      className="value"
+    >
+      fred
+    </span>
+  </li>
+  <li>
+    <span
+      className="label"
+    >
+      Height
+      :
+    </span>
+    <span
+      className="value"
+    >
+      68.12
+    </span>
+  </li>
+</ul>
+`;
+
 exports[`Storyshots ZoomableGroup with no children 1`] = `
 <svg
   className="ZoomableGroup"
