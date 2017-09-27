@@ -12,7 +12,7 @@ class ZoomableGroup extends Component {
   node: Object;
   viewG: Object;
 
-  state: { scale: number };
+  state: { transform: { k: number, x: number, y: number } };
 
   constructor(props: Object) {
     super(props);
@@ -20,7 +20,7 @@ class ZoomableGroup extends Component {
     this.init = this.init.bind(this);
     this.zoomed = this.zoomed.bind(this);
 
-    this.state = { scale: 1 };
+    this.state = { transform: { k: 1, x: 0, y: 0 } };
   }
 
   componentDidMount() {
@@ -38,19 +38,20 @@ class ZoomableGroup extends Component {
   zoomed() {
     const { transform } = d3.event;
     this.viewG.attr('transform', transform);
-    this.setState({ scale: transform.k });
+    this.setState({ transform: transform });
   }
 
   renderChildren() {
     return React.Children.map(this.props.children, child => {
       return React.cloneElement(child, {
-        scale: this.state.scale,
+        scale: this.state.transform.k,
       });
     });
   }
 
   render() {
-    const transform = `scale(${this.state.scale})`;
+    const t = this.state.transform;
+    const transform = `translate(${t.x} ${t.y}) scale(${t.k})`;
 
     return (
       <svg

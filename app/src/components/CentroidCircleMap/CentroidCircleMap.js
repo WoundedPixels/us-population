@@ -99,6 +99,11 @@ class CentroidCircleMap extends Component {
       .on('mouseleave', this.clearTooltip);
 
     // circles.attr('stroke-width', 1.5 / this.props.scale);
+    circles.attr('r', d => {
+      return (
+        Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
+      );
+    });
   }
 
   render() {

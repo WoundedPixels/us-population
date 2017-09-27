@@ -8,7 +8,6 @@ import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
 import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap';
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
-import { buildTips } from './components/Tooltip/TipList';
 
 import { topoToGeo, enrich } from './DataManipulation';
 
@@ -31,14 +30,22 @@ const neutralFill = () => {
 };
 
 const buildTooltip = d => {
-  return buildTips(d.properties, [
-    { label: 'Name', source: 'name' },
-    {
-      label: 'Childhood Poverty',
-      source: 'childrenPovertyRatio',
-      format: '.1%',
-    },
-  ]);
+  const cpr = d3.format('.1%')(d.properties.childrenPovertyRatio);
+  const name = d.properties.name;
+
+  return (
+    <div className="tips">
+      <div className="label">
+        {name}
+      </div>
+      <div className="tip">
+        <span className="label">Childhood Poverty Rate: </span>
+        <span>
+          {cpr}
+        </span>
+      </div>
+    </div>
+  );
 };
 
 class App extends Component {
