@@ -66,52 +66,47 @@ class App extends Component {
   componentDidMount() {
     d3
       .queue()
-      .defer(d3.json, '/topo-json/us-10m.json')
-      .defer(d3.csv, '/data/StatesFIPSCodes.csv')
-      .defer(d3.csv, '/data/ACS_15_SPT_B01003.csv')
-      .defer(d3.csv, '/data/est15-subset.csv')
-      .await(
-        (
-          error,
-          topoJSON,
-          stateFipsCodes,
-          rawPopulationByCounty,
-          rawPovertyData,
-        ) => {
-          const povertyData = rawPovertyData.map(row => {
-            return {
-              stateFIPS: d3.format('02')(row.stateFIPS),
-              countyFIPS: d3.format('03')(row.countyFIPS),
-              fipsCode:
-                d3.format('02')(row.stateFIPS) +
-                d3.format('03')(row.countyFIPS),
-              name: row.name,
-              stateAbbreviation: row.stateAbbreviation,
-              medianHouseholdIncome: row.medianHouseholdIncome,
-              allAgesPovertyCount: +row.allAgesPovertyCount,
-              allAgesPovertyRatio: +row.allAgesPovertyPercent / 100,
-              allAgesCount:
-                100 * row.allAgesPovertyCount / row.allAgesPovertyPercent,
-              childrenPovertyCount: +row.childrenPovertyCount,
-              childrenPovertyRatio: +row.childrenPovertyPercent / 100,
-              childrenCount:
-                100 * row.childrenPovertyCount / row.childrenPovertyPercent,
-            };
-          });
+      .defer(
+        d3.json,
+        'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/topo-json/us-10m.json',
+      )
+      .defer(
+        d3.csv,
+        'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/data/est15-subset.csv',
+      )
+      .await((error, topoJSON, rawPovertyData) => {
+        const povertyData = rawPovertyData.map(row => {
+          return {
+            stateFIPS: d3.format('02')(row.stateFIPS),
+            countyFIPS: d3.format('03')(row.countyFIPS),
+            fipsCode:
+              d3.format('02')(row.stateFIPS) + d3.format('03')(row.countyFIPS),
+            name: row.name,
+            stateAbbreviation: row.stateAbbreviation,
+            medianHouseholdIncome: row.medianHouseholdIncome,
+            allAgesPovertyCount: +row.allAgesPovertyCount,
+            allAgesPovertyRatio: +row.allAgesPovertyPercent / 100,
+            allAgesCount:
+              100 * row.allAgesPovertyCount / row.allAgesPovertyPercent,
+            childrenPovertyCount: +row.childrenPovertyCount,
+            childrenPovertyRatio: +row.childrenPovertyPercent / 100,
+            childrenCount:
+              100 * row.childrenPovertyCount / row.childrenPovertyPercent,
+          };
+        });
 
-          const states = povertyData.filter(row => row.countyFIPS === '000');
-          const counties = povertyData.filter(row => row.countyFIPS !== '000');
+        const states = povertyData.filter(row => row.countyFIPS === '000');
+        const counties = povertyData.filter(row => row.countyFIPS !== '000');
 
-          const statesGeoJSON = topoToGeo(topoJSON, 'states');
-          const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
+        const statesGeoJSON = topoToGeo(topoJSON, 'states');
+        const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
 
-          enrich(statesGeoJSON, states, 'stateFIPS');
-          enrich(countiesGeoJSON, counties, 'fipsCode');
+        enrich(statesGeoJSON, states, 'stateFIPS');
+        enrich(countiesGeoJSON, counties, 'fipsCode');
 
-          this.setState({ statesGeoJSON });
-          this.setState({ countiesGeoJSON });
-        },
-      );
+        this.setState({ statesGeoJSON });
+        this.setState({ countiesGeoJSON });
+      });
   }
 
   render() {

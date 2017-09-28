@@ -1,5 +1,6 @@
 {
   "name": "app",
+  "homepage": "http://woundedpixels.github.io/us-population",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -25,7 +26,9 @@
     "test": "react-scripts test --env=jsdom --no-cache",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 9009 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.2.6",
@@ -33,6 +36,7 @@
     "@storybook/addon-storyshots": "^3.2.8",
     "@storybook/cli": "^3.2.9",
     "@storybook/react": "^3.2.8",
-    "flow-bin": "^0.51.1"
+    "flow-bin": "^0.51.1",
+    "gh-pages": "^1.0.0"
   }
 }
