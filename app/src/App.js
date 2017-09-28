@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import { interpolateBlues } from 'd3-scale-chromatic';
+import { interpolateYlOrRd } from 'd3-scale-chromatic';
 
 import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
 import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap';
@@ -13,35 +13,55 @@ import { topoToGeo, enrich } from './DataManipulation';
 
 import './App.css';
 
+const BASE_PATH =
+  'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/';
+
 const calculateArea = d => {
   if (!d.properties || !d.properties.allAgesCount) {
     console.log('no population', JSON.stringify(d));
   }
-  return d.properties.allAgesCount / 10000;
+
+  const count = d.properties.allAgesCount || 0;
+  return count / 2500;
 };
 
 const calculateFill = d => {
-  const colorScale = d3.scaleSequential(interpolateBlues).domain([0.0, 0.62]);
+  const colorScale = d3.scaleSequential(interpolateYlOrRd).domain([0.0, 0.62]);
   return colorScale(d.properties.childrenPovertyRatio);
 };
 
-const neutralFill = () => {
-  return '#EEEEEE';
+const neutralFill = d => {
+  return d.properties.childrenPovertyRatio < 0.4 ? '#EEEEEE' : '#FFFFFF';
 };
 
 const buildTooltip = d => {
-  const cpr = d3.format('.1%')(d.properties.childrenPovertyRatio);
-  const name = d.properties.name;
+  const {
+    allAgesCount,
+    childrenPovertyRatio,
+    name,
+    stateAbbreviation,
+  } = d.properties;
+  const cpr = d3.format('.1%')(childrenPovertyRatio);
+  const count = d3.format(',')(allAgesCount);
+  const fullname = name.includes('County')
+    ? `${name}, ${stateAbbreviation}`
+    : name;
 
   return (
     <div className="tips">
       <div className="label">
-        {name}
+        {fullname}
       </div>
       <div className="tip">
         <span className="label">Childhood Poverty Rate: </span>
         <span>
           {cpr}
+        </span>
+      </div>
+      <div className="tip">
+        <span className="label">Population: </span>
+        <span>
+          {count}
         </span>
       </div>
     </div>
@@ -66,14 +86,8 @@ class App extends Component {
   componentDidMount() {
     d3
       .queue()
-      .defer(
-        d3.json,
-        'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/topo-json/us-10m.json',
-      )
-      .defer(
-        d3.csv,
-        'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/data/est15-subset.csv',
-      )
+      .defer(d3.json, BASE_PATH + 'topo-json/us-10m.json')
+      .defer(d3.csv, BASE_PATH + 'data/est15-subset.csv')
       .await((error, topoJSON, rawPovertyData) => {
         const povertyData = rawPovertyData.map(row => {
           return {
@@ -86,12 +100,14 @@ class App extends Component {
             medianHouseholdIncome: row.medianHouseholdIncome,
             allAgesPovertyCount: +row.allAgesPovertyCount,
             allAgesPovertyRatio: +row.allAgesPovertyPercent / 100,
-            allAgesCount:
+            allAgesCount: Math.trunc(
               100 * row.allAgesPovertyCount / row.allAgesPovertyPercent,
+            ),
             childrenPovertyCount: +row.childrenPovertyCount,
             childrenPovertyRatio: +row.childrenPovertyPercent / 100,
-            childrenCount:
+            childrenCount: Math.trunc(
               100 * row.childrenPovertyCount / row.childrenPovertyPercent,
+            ),
           };
         });
 
