@@ -2,26 +2,70 @@
 
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import { interpolateBlues } from 'd3-scale-chromatic';
+import { interpolateYlOrRd } from 'd3-scale-chromatic';
 
 import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
+import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap';
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
+
 import { topoToGeo, enrich } from './DataManipulation';
 
 import './App.css';
 
-const calculateFill = d => {
-  const colorScale = d3.scaleSequential(interpolateBlues);
-  return colorScale(d.properties.populationRatio);
+const BASE_PATH =
+  'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/';
+
+const calculateArea = d => {
+  if (!d.properties || !d.properties.allAgesCount) {
+    console.log('no population', JSON.stringify(d));
+  }
+
+  const count = d.properties.allAgesCount || 0;
+  return count / 2500;
 };
 
-const emptyFill = () => {
-  return 'none';
+const calculateFill = d => {
+  const colorScale = d3.scaleSequential(interpolateYlOrRd).domain([0.0, 0.62]);
+  return colorScale(d.properties.childrenPovertyRatio);
+};
+
+const neutralFill = d => {
+  return d.properties.childrenPovertyRatio < 0.4 ? '#EEEEEE' : '#FFFFFF';
 };
 
 const buildTooltip = d => {
-  return `d.properties: ${JSON.stringify(d.properties)}`;
+  const {
+    allAgesCount,
+    childrenPovertyRatio,
+    name,
+    stateAbbreviation,
+  } = d.properties;
+  const cpr = d3.format('.1%')(childrenPovertyRatio);
+  const count = d3.format(',')(allAgesCount);
+  const fullname = name.includes('County')
+    ? `${name}, ${stateAbbreviation}`
+    : name;
+
+  return (
+    <div className="tips">
+      <div className="label">
+        {fullname}
+      </div>
+      <div className="tip">
+        <span className="label">Childhood Poverty Rate: </span>
+        <span>
+          {cpr}
+        </span>
+      </div>
+      <div className="tip">
+        <span className="label">Population: </span>
+        <span>
+          {count}
+        </span>
+      </div>
+    </div>
+  );
 };
 
 class App extends Component {
@@ -42,47 +86,39 @@ class App extends Component {
   componentDidMount() {
     d3
       .queue()
-      .defer(d3.json, '/topo-json/us-10m.json')
-      .defer(d3.csv, '/data/StatesFIPSCodes.csv')
-      .defer(d3.csv, '/data/ACS_15_SPT_B01003.csv')
-      .await((error, topoJSON, stateFipsCodes, populationByCounty) => {
+      .defer(d3.json, BASE_PATH + 'topo-json/us-10m.json')
+      .defer(d3.csv, BASE_PATH + 'data/est15-subset.csv')
+      .await((error, topoJSON, rawPovertyData) => {
+        const povertyData = rawPovertyData.map(row => {
+          return {
+            stateFIPS: d3.format('02')(row.stateFIPS),
+            countyFIPS: d3.format('03')(row.countyFIPS),
+            fipsCode:
+              d3.format('02')(row.stateFIPS) + d3.format('03')(row.countyFIPS),
+            name: row.name,
+            stateAbbreviation: row.stateAbbreviation,
+            medianHouseholdIncome: row.medianHouseholdIncome,
+            allAgesPovertyCount: +row.allAgesPovertyCount,
+            allAgesPovertyRatio: +row.allAgesPovertyPercent / 100,
+            allAgesCount: Math.trunc(
+              100 * row.allAgesPovertyCount / row.allAgesPovertyPercent,
+            ),
+            childrenPovertyCount: +row.childrenPovertyCount,
+            childrenPovertyRatio: +row.childrenPovertyPercent / 100,
+            childrenCount: Math.trunc(
+              100 * row.childrenPovertyCount / row.childrenPovertyPercent,
+            ),
+          };
+        });
+
+        const states = povertyData.filter(row => row.countyFIPS === '000');
+        const counties = povertyData.filter(row => row.countyFIPS !== '000');
+
         const statesGeoJSON = topoToGeo(topoJSON, 'states');
         const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
 
-        const populationByState = populationByCounty.reduce(
-          (popMap, county) => {
-            const stateFIPS = county['GEO.id2'].substring(0, 2);
-            popMap[stateFIPS] = popMap[stateFIPS] || 0;
-            popMap[stateFIPS] += +county['HD01_VD01'];
-            return popMap;
-          },
-          {},
-        );
-
-        statesGeoJSON.forEach(feature => {
-          feature.properties.population = populationByState[feature.id];
-        });
-
-        const maxStatePopulation = d3.max(statesGeoJSON, feature => {
-          return feature.properties.population;
-        });
-
-        statesGeoJSON.forEach(feature => {
-          feature.properties.populationRatio =
-            feature.properties.population / maxStatePopulation;
-        });
-
-        enrich(statesGeoJSON, stateFipsCodes, 'STATE_FIPS', {
-          STATE_NAME: 'name',
-          STATE_FIPS: 'fipsCode',
-          STUSAB: 'abbreviation',
-        });
-
-        enrich(countiesGeoJSON, populationByCounty, 'GEO.id2', {
-          'GEO.display-label': 'name',
-          'GEO.id2': 'fipsCode',
-          HD01_VD01: 'population',
-        });
+        enrich(statesGeoJSON, states, 'stateFIPS');
+        enrich(countiesGeoJSON, counties, 'fipsCode');
 
         this.setState({ statesGeoJSON });
         this.setState({ countiesGeoJSON });
@@ -100,14 +136,30 @@ class App extends Component {
           <Map
             regionsGeoJSON={this.state.statesGeoJSON}
             buildTooltip={buildTooltip}
-            calculateFill={calculateFill}
+            calculateFill={neutralFill}
             minScale="0"
             maxScale="1000000"
+          />
+          <CentroidCircleMap
+            regionsGeoJSON={this.state.statesGeoJSON}
+            buildTooltip={buildTooltip}
+            calculateFill={calculateFill}
+            calculateArea={calculateArea}
+            minScale="0"
+            maxScale="2"
           />
           <Map
             regionsGeoJSON={this.state.countiesGeoJSON}
             buildTooltip={buildTooltip}
-            calculateFill={emptyFill}
+            calculateFill={neutralFill}
+            minScale="2"
+            maxScale="1000000"
+          />
+          <CentroidCircleMap
+            regionsGeoJSON={this.state.countiesGeoJSON}
+            buildTooltip={buildTooltip}
+            calculateFill={calculateFill}
+            calculateArea={calculateArea}
             minScale="2"
             maxScale="1000000"
           />
