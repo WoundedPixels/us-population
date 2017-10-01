@@ -6,6 +6,7 @@ import { interpolateYlOrRd } from 'd3-scale-chromatic';
 
 import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
 import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap';
+import ColorScaleLegend from './components/ColorScaleLegend/ColorScaleLegend';
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
 
@@ -15,6 +16,8 @@ import './App.css';
 
 const BASE_PATH =
   'https://raw.githubusercontent.com/WoundedPixels/us-population/gh-pages/';
+
+const colorScale = d3.scaleSequential(interpolateYlOrRd).domain([0.1, 0.4]);
 
 const calculateArea = d => {
   if (!d.properties || !d.properties.allAgesCount) {
@@ -26,22 +29,26 @@ const calculateArea = d => {
 };
 
 const calculateFill = d => {
-  const colorScale = d3.scaleSequential(interpolateYlOrRd).domain([0.0, 0.62]);
   return colorScale(d.properties.childrenPovertyRatio);
 };
 
 const neutralFill = d => {
-  return d.properties.childrenPovertyRatio < 0.4 ? '#EEEEEE' : '#FFFFFF';
+  return d.properties.childrenPovertyRatio < 0.35 ? '#EEEEEE' : '#FFFFFF';
 };
 
 const buildTooltip = d => {
   const {
     allAgesCount,
+    childrenCount,
     childrenPovertyRatio,
+    childrenPovertyCount,
     name,
     stateAbbreviation,
   } = d.properties;
   const cpr = d3.format('.1%')(childrenPovertyRatio);
+  const cpc = d3.format(',')(childrenPovertyCount);
+  const cc = d3.format(',')(childrenCount);
+
   const count = d3.format(',')(allAgesCount);
   const fullname = name.includes('County')
     ? `${name}, ${stateAbbreviation}`
@@ -62,6 +69,18 @@ const buildTooltip = d => {
         <span className="label">Population: </span>
         <span>
           {count}
+        </span>
+      </div>
+      <div className="tip">
+        <span className="label">Children: </span>
+        <span>
+          {cc}
+        </span>
+      </div>
+      <div className="tip">
+        <span className="label">Children in Poverty: </span>
+        <span>
+          {cpc}
         </span>
       </div>
     </div>
@@ -129,41 +148,63 @@ class App extends Component {
     const width = 950;
     const height = 0.65 * width;
 
+    const colorScaleProps = {
+      blockHeight: 50,
+      blockWidth: 60,
+      colorScale,
+      format: '.0%',
+      values: [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4],
+    };
+
     return (
       <div id="App">
-        <Tooltip />
-        <ZoomableGroup width={width} height={height}>
-          <Map
-            regionsGeoJSON={this.state.statesGeoJSON}
-            buildTooltip={buildTooltip}
-            calculateFill={neutralFill}
-            minScale="0"
-            maxScale="1000000"
-          />
-          <CentroidCircleMap
-            regionsGeoJSON={this.state.statesGeoJSON}
-            buildTooltip={buildTooltip}
-            calculateFill={calculateFill}
-            calculateArea={calculateArea}
-            minScale="0"
-            maxScale="2"
-          />
-          <Map
-            regionsGeoJSON={this.state.countiesGeoJSON}
-            buildTooltip={buildTooltip}
-            calculateFill={neutralFill}
-            minScale="2"
-            maxScale="1000000"
-          />
-          <CentroidCircleMap
-            regionsGeoJSON={this.state.countiesGeoJSON}
-            buildTooltip={buildTooltip}
-            calculateFill={calculateFill}
-            calculateArea={calculateArea}
-            minScale="2"
-            maxScale="1000000"
-          />
-        </ZoomableGroup>
+        <div className="content">
+          <Tooltip />
+          <h1>Childhood Poverty in the US</h1>
+          <ZoomableGroup width={width} height={height}>
+            <Map
+              regionsGeoJSON={this.state.statesGeoJSON}
+              buildTooltip={buildTooltip}
+              calculateFill={neutralFill}
+              minScale="0"
+              maxScale="1000000"
+            />
+            <CentroidCircleMap
+              regionsGeoJSON={this.state.statesGeoJSON}
+              buildTooltip={buildTooltip}
+              calculateFill={calculateFill}
+              calculateArea={calculateArea}
+              minScale="0"
+              maxScale="2"
+            />
+            <Map
+              regionsGeoJSON={this.state.countiesGeoJSON}
+              buildTooltip={buildTooltip}
+              calculateFill={neutralFill}
+              minScale="2"
+              maxScale="1000000"
+            />
+            <CentroidCircleMap
+              regionsGeoJSON={this.state.countiesGeoJSON}
+              buildTooltip={buildTooltip}
+              calculateFill={calculateFill}
+              calculateArea={calculateArea}
+              minScale="2"
+              maxScale="1000000"
+            />
+          </ZoomableGroup>
+          <ColorScaleLegend {...colorScaleProps} />
+        </div>
+        <div className="footer">
+          Created by{' '}
+          <a href="https://github.com/WoundedPixels/us-population">
+            WoundedPixels
+          </a>{' '}
+          Based on{' '}
+          <a href="https://www.census.gov/did/www/saipe/data/statecounty/data/2015.html">
+            2015 US Census Data
+          </a>
+        </div>
       </div>
     );
   }

@@ -1,3 +1,21 @@
-.App {
-  text-align: center;
+#App {
+  .content {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: smaller;
+    justify-content: center;
+    padding: 5px 0px 5px 0px;
+
+    a {
+      padding: 0px 5px;
+    }
+  }
 }

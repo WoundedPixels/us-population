@@ -18,6 +18,126 @@ exports[`Storyshots Button with text 1`] = `
 </button>
 `;
 
+exports[`Storyshots ColorScaleLegend simple scale 1`] = `
+<div
+  className="ColorScaleLegend"
+  style={
+    Object {
+      "width": "300px",
+    }
+  }
+>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      0%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(255, 255, 204)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      20%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(254, 224, 135)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      40%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(254, 171, 75)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      60%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(250, 92, 46)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      80%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(211, 17, 33)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+  <div
+    className="block"
+  >
+    <div
+      className="label"
+    >
+      100%
+    </div>
+    <div
+      style={
+        Object {
+          "backgroundColor": "rgb(128, 0, 38)",
+          "height": "50px",
+          "width": "50px",
+        }
+      }
+    />
+  </div>
+</div>
+`;
+
 exports[`Storyshots Map empty 1`] = `
 <div>
   <div

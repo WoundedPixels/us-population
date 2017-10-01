@@ -1,0 +1,11 @@
+@import '../../styles/colors.scss';
+
+.ColorScaleLegend {
+  margin: 10px 0px;
+  .block {
+    float: left;
+  }
+  .label {
+    text-align: right;
+  }
+}
