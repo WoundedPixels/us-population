@@ -9,6 +9,8 @@ import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap'
 import ColorScaleLegend from './components/ColorScaleLegend/ColorScaleLegend';
 import Map from './components/Map/Map';
 import Tooltip from './components/Tooltip/Tooltip';
+import Tips from './components/Tooltip/Tips';
+import Tip from './components/Tooltip/Tip';
 
 import { topoToGeo, enrich } from './DataManipulation';
 
@@ -45,45 +47,25 @@ const buildTooltip = d => {
     name,
     stateAbbreviation,
   } = d.properties;
-  const cpr = d3.format('.1%')(childrenPovertyRatio);
-  const cpc = d3.format(',')(childrenPovertyCount);
-  const cc = d3.format(',')(childrenCount);
 
-  const count = d3.format(',')(allAgesCount);
   const fullname = name.includes('County')
     ? `${name}, ${stateAbbreviation}`
     : name;
 
   return (
-    <div className="tips">
-      <div className="label">
-        {fullname}
-      </div>
-      <div className="tip">
-        <span className="label">Childhood Poverty Rate: </span>
-        <span>
-          {cpr}
-        </span>
-      </div>
-      <div className="tip">
-        <span className="label">Population: </span>
-        <span>
-          {count}
-        </span>
-      </div>
-      <div className="tip">
-        <span className="label">Children: </span>
-        <span>
-          {cc}
-        </span>
-      </div>
-      <div className="tip">
-        <span className="label">Children in Poverty: </span>
-        <span>
-          {cpc}
-        </span>
-      </div>
-    </div>
+    <Tips>
+      <Tip label={fullname} />
+      <Tip
+        label="Childhood Poverty Rate:"
+        value={d3.format('.1%')(childrenPovertyRatio)}
+      />
+      <Tip label="Population:" value={d3.format(',')(allAgesCount)} />
+      <Tip label="Children:" value={d3.format(',')(childrenCount)} />
+      <Tip
+        label="Children in Poverty:"
+        value={d3.format(',')(childrenPovertyCount)}
+      />
+    </Tips>
   );
 };
 
