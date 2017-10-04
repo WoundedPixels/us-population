@@ -11,7 +11,7 @@ import Map from '../Map/Map';
 import Tooltip from '../Tooltip/Tooltip';
 
 const buildTooltip = d => {
-  return 'Static tooltip';
+  return <div>Static tooltip</div>;
 };
 
 const calculateFill = d => {
@@ -24,7 +24,7 @@ const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
 
 storiesOf('ZoomableGroup', module)
   .add('with no children', () => <ZoomableGroup />)
-  .add('with one Map', () =>
+  .add('different children', () =>
     <div>
       <Tooltip />
       <ZoomableGroup width="1000" height="500">
@@ -33,7 +33,14 @@ storiesOf('ZoomableGroup', module)
           buildTooltip={buildTooltip}
           calculateFill={calculateFill}
           minScale="0"
-          maxScale="1000000"
+          maxScale="3"
+        />
+        <Map
+          regionsGeoJSON={countiesGeoJSON}
+          buildTooltip={buildTooltip}
+          calculateFill={calculateFill}
+          minScale="3"
+          maxScale="5"
         />
       </ZoomableGroup>
     </div>,

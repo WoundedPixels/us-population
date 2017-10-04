@@ -1,7 +1,6 @@
 // @flow
 
 import React, { Component } from 'react';
-import classNames from 'classnames';
 import * as d3 from 'd3';
 
 import Tooltip from '../Tooltip/Tooltip';
@@ -113,16 +112,12 @@ class CentroidCircleMap extends Component {
 
   render() {
     console.log('CentroidCircleMap render');
-    const minScale = +this.props.minScale;
-    const maxScale = +this.props.maxScale;
-    const hidden = this.props.scale < minScale || this.props.scale > maxScale;
 
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }
 
-    const classnames = classNames('CentroidCircleMap', { hidden: hidden });
-    return <g className={classnames} ref={node => (this.node = node)} />;
+    return <g ref={node => (this.node = node)} />;
   }
 }
 

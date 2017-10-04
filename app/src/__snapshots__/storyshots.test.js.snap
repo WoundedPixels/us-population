@@ -229,19 +229,7 @@ exports[`Storyshots Tooltip empty 1`] = `
 />
 `;
 
-exports[`Storyshots ZoomableGroup with no children 1`] = `
-<svg
-  className="ZoomableGroup"
-  height={undefined}
-  width={undefined}
->
-  <g
-    transform="translate(0 0) scale(1)"
-  />
-</svg>
-`;
-
-exports[`Storyshots ZoomableGroup with one Map 1`] = `
+exports[`Storyshots ZoomableGroup different children 1`] = `
 <div>
   <div
     className="Tooltip"
@@ -263,7 +251,22 @@ exports[`Storyshots ZoomableGroup with one Map 1`] = `
       <g
         className="Map"
       />
+      <g
+        className="hidden"
+      />
     </g>
   </svg>
 </div>
+`;
+
+exports[`Storyshots ZoomableGroup with no children 1`] = `
+<svg
+  className="ZoomableGroup"
+  height={undefined}
+  width={undefined}
+>
+  <g
+    transform="translate(0 0) scale(1)"
+  />
+</svg>
 `;

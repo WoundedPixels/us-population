@@ -1,6 +1,8 @@
 // @flow
 
 import React, { Component } from 'react';
+import classNames from 'classnames';
+
 import * as d3 from 'd3';
 
 import './ZoomableGroup.css';
@@ -43,8 +45,17 @@ class ZoomableGroup extends Component {
 
   renderChildren() {
     return React.Children.map(this.props.children, child => {
+      const scale = this.state.transform.k;
+      const { minScale, maxScale } = child.props;
+
+      const hidden = scale < minScale || scale >= maxScale;
+
+      if (hidden) {
+        return <g className="hidden" />;
+      }
+
       return React.cloneElement(child, {
-        scale: this.state.transform.k,
+        scale,
       });
     });
   }
