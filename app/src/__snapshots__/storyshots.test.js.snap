@@ -184,6 +184,39 @@ exports[`Storyshots Map populated 1`] = `
 </div>
 `;
 
+exports[`Storyshots Tips contents 1`] = `
+<div
+  className="Tips"
+>
+  <div
+    className="Tip"
+  >
+    <span
+      className="label"
+    >
+      Person
+    </span>
+    <span
+      className="value"
+    />
+  </div>
+  <div
+    className="Tip"
+  >
+    <span
+      className="label"
+    >
+      Name:
+    </span>
+    <span
+      className="value"
+    >
+      Fred
+    </span>
+  </div>
+</div>
+`;
+
 exports[`Storyshots Tooltip empty 1`] = `
 <div
   className="Tooltip"

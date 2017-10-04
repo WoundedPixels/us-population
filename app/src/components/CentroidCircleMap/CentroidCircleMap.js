@@ -14,6 +14,7 @@ class CentroidCircleMap extends Component {
   updateTooltip: Function;
   clearTooltip: Function;
   node: Object;
+  sortedRegionsGeoJSON: [];
 
   constructor(props: Object) {
     super(props);
@@ -45,6 +46,10 @@ class CentroidCircleMap extends Component {
     this.props.regionsGeoJSON.forEach(region => {
       region.properties.centroid = path.centroid(region);
     });
+
+    this.sortedRegionsGeoJSON = this.props.regionsGeoJSON.sort((a, b) => {
+      return b.properties.allAgesCount - a.properties.allAgesCount;
+    });
   }
 
   readyCheck() {
@@ -75,7 +80,7 @@ class CentroidCircleMap extends Component {
 
     const circles = bubblesG
       .selectAll('circle.bubble')
-      .data(this.props.regionsGeoJSON);
+      .data(this.sortedRegionsGeoJSON);
 
     circles
       .enter()
