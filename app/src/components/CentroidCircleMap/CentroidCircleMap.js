@@ -7,13 +7,25 @@ import Tooltip from '../Tooltip/Tooltip';
 
 import './CentroidCircleMap.css';
 
+const defaultCalculateFill = d => {
+  return '#D3D3D3';
+};
+
+const defaultcalculateStroke = d => {
+  return 'none';
+};
+
+const defaultcalculateStrokeWidth = d => {
+  return 0;
+};
+
 class CentroidCircleMap extends Component {
-  init: Function;
-  update: Function;
-  updateTooltip: Function;
   clearTooltip: Function;
+  init: Function;
   node: Object;
   sortedRegionsGeoJSON: [];
+  update: Function;
+  updateTooltip: Function;
 
   constructor(props: Object) {
     super(props);
@@ -70,6 +82,13 @@ class CentroidCircleMap extends Component {
       return;
     }
 
+    const calculateArea = this.props.calculateArea;
+    const calculateFill = this.props.calculateFill || defaultCalculateFill;
+    const calculateStroke =
+      this.props.calculateStroke || defaultcalculateStroke;
+    const calculateStrokeWidth =
+      this.props.calculateStrokeWidth || defaultcalculateStrokeWidth;
+
     const node = d3.select(this.node);
     if (node.select('g.bubbles').empty()) {
       this.init();
@@ -92,22 +111,26 @@ class CentroidCircleMap extends Component {
         return d.properties.centroid[1];
       })
       .attr('r', d => {
-        return (
-          Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
-        );
+        return Math.sqrt(calculateArea(d) / Math.PI) / this.props.scale;
       })
-      .attr('fill', this.props.calculateFill)
-      // .attr('stroke-width', 1 / this.props.scale)
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      })
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
 
-    // circles.attr('stroke-width', 1.5 / this.props.scale);
-    circles.attr('r', d => {
-      return (
-        Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
-      );
-    });
+    circles
+      .attr('r', d => {
+        return Math.sqrt(calculateArea(d) / Math.PI) / this.props.scale;
+      })
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      });
   }
 
   render() {

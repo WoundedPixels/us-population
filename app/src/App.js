@@ -38,6 +38,14 @@ const neutralFill = d => {
   return d.properties.childrenPovertyRatio < 0.35 ? '#EEEEEE' : '#FFFFFF';
 };
 
+const calculateStroke = d => {
+  return 'black';
+};
+
+const calculateStrokeWidth = d => {
+  return 0.5;
+};
+
 const buildTooltip = d => {
   const {
     allAgesCount,
@@ -141,8 +149,10 @@ class App extends Component {
     return (
       <div id="App">
         <div className="content">
-          <Tooltip />
           <h1>Childhood Poverty in the US</h1>
+        </div>
+        <div className="content">
+          <Tooltip />
           <ZoomableGroup width={width} height={height}>
             <Map
               regionsGeoJSON={this.state.statesGeoJSON}
@@ -152,12 +162,14 @@ class App extends Component {
               maxScale="1000000"
             />
             <CentroidCircleMap
-              regionsGeoJSON={this.state.statesGeoJSON}
               buildTooltip={buildTooltip}
-              calculateFill={calculateFill}
               calculateArea={calculateArea}
-              minScale="0"
+              calculateFill={calculateFill}
+              calculateStroke={calculateStroke}
+              calculateStrokeWidth={calculateStrokeWidth}
               maxScale="2"
+              minScale="0"
+              regionsGeoJSON={this.state.statesGeoJSON}
             />
             <Map
               regionsGeoJSON={this.state.countiesGeoJSON}
@@ -167,12 +179,14 @@ class App extends Component {
               maxScale="1000000"
             />
             <CentroidCircleMap
-              regionsGeoJSON={this.state.countiesGeoJSON}
               buildTooltip={buildTooltip}
-              calculateFill={calculateFill}
               calculateArea={calculateArea}
-              minScale="2"
+              calculateFill={calculateFill}
+              calculateStroke={calculateStroke}
+              calculateStrokeWidth={calculateStrokeWidth}
               maxScale="1000000"
+              minScale="2"
+              regionsGeoJSON={this.state.countiesGeoJSON}
             />
           </ZoomableGroup>
           <ColorScaleLegend {...colorScaleProps} />

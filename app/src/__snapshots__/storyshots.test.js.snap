@@ -18,6 +18,70 @@ exports[`Storyshots Button with text 1`] = `
 </button>
 `;
 
+exports[`Storyshots CentroidCircleMap all optional parameters 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    height="500"
+    width="950"
+  >
+    <g />
+  </svg>
+</div>
+`;
+
+exports[`Storyshots CentroidCircleMap empty 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    height="500"
+    width="950"
+  >
+    <text
+      transform="translate(50,50)"
+    >
+      Loading
+    </text>
+  </svg>
+</div>
+`;
+
+exports[`Storyshots CentroidCircleMap no optional parameters 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    height="500"
+    width="950"
+  >
+    <g />
+  </svg>
+</div>
+`;
+
 exports[`Storyshots ColorScaleLegend simple scale 1`] = `
 <div
   className="ColorScaleLegend"
@@ -138,6 +202,28 @@ exports[`Storyshots ColorScaleLegend simple scale 1`] = `
 </div>
 `;
 
+exports[`Storyshots Map all optional parameters 1`] = `
+<div>
+  <div
+    className="Tooltip"
+    id="tooltip"
+    style={
+      Object {
+        "display": "none",
+      }
+    }
+  />
+  <svg
+    height="500"
+    width="950"
+  >
+    <g
+      className="Map"
+    />
+  </svg>
+</div>
+`;
+
 exports[`Storyshots Map empty 1`] = `
 <div>
   <div
@@ -162,7 +248,7 @@ exports[`Storyshots Map empty 1`] = `
 </div>
 `;
 
-exports[`Storyshots Map populated 1`] = `
+exports[`Storyshots Map no optional parameters 1`] = `
 <div>
   <div
     className="Tooltip"
