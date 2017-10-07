@@ -38,6 +38,14 @@ const neutralFill = d => {
   return d.properties.childrenPovertyRatio < 0.35 ? '#EEEEEE' : '#FFFFFF';
 };
 
+const noFill = d => 'none';
+
+const blackStroke = d => 'black';
+const greyStroke = d => '#444';
+
+const thinStrokeWidth = d => 0.5;
+const thickStrokeWidth = d => 2;
+
 const buildTooltip = d => {
   const {
     allAgesCount,
@@ -141,21 +149,15 @@ class App extends Component {
     return (
       <div id="App">
         <div className="content">
-          <Tooltip />
           <h1>Childhood Poverty in the US</h1>
+        </div>
+        <div className="content">
+          <Tooltip />
           <ZoomableGroup width={width} height={height}>
             <Map
               regionsGeoJSON={this.state.statesGeoJSON}
               buildTooltip={buildTooltip}
               calculateFill={neutralFill}
-              minScale="0"
-              maxScale="1000000"
-            />
-            <CentroidCircleMap
-              regionsGeoJSON={this.state.statesGeoJSON}
-              buildTooltip={buildTooltip}
-              calculateFill={calculateFill}
-              calculateArea={calculateArea}
               minScale="0"
               maxScale="2"
             />
@@ -166,13 +168,34 @@ class App extends Component {
               minScale="2"
               maxScale="1000000"
             />
-            <CentroidCircleMap
-              regionsGeoJSON={this.state.countiesGeoJSON}
+            <Map
+              regionsGeoJSON={this.state.statesGeoJSON}
               buildTooltip={buildTooltip}
-              calculateFill={calculateFill}
-              calculateArea={calculateArea}
+              calculateFill={noFill}
+              calculateStroke={blackStroke}
+              calculateStrokeWidth={thickStrokeWidth}
               minScale="2"
               maxScale="1000000"
+            />
+            <CentroidCircleMap
+              buildTooltip={buildTooltip}
+              calculateArea={calculateArea}
+              calculateFill={calculateFill}
+              calculateStroke={greyStroke}
+              calculateStrokeWidth={thinStrokeWidth}
+              maxScale="2"
+              minScale="0"
+              regionsGeoJSON={this.state.statesGeoJSON}
+            />
+            <CentroidCircleMap
+              buildTooltip={buildTooltip}
+              calculateArea={calculateArea}
+              calculateFill={calculateFill}
+              calculateStroke={greyStroke}
+              calculateStrokeWidth={thinStrokeWidth}
+              maxScale="1000000"
+              minScale="2"
+              regionsGeoJSON={this.state.countiesGeoJSON}
             />
           </ZoomableGroup>
           <ColorScaleLegend {...colorScaleProps} />

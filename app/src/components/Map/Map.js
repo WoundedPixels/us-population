@@ -7,6 +7,10 @@ import Tooltip from '../Tooltip/Tooltip';
 
 import './Map.css';
 
+const defaultCalculateFill = d => '#D3D3D3';
+const defaultcalculateStroke = d => '#333';
+const defaultcalculateStrokeWidth = d => 1.5;
+
 class Map extends Component {
   init: Function;
   update: Function;
@@ -59,6 +63,12 @@ class Map extends Component {
       return;
     }
 
+    const calculateFill = this.props.calculateFill || defaultCalculateFill;
+    const calculateStroke =
+      this.props.calculateStroke || defaultcalculateStroke;
+    const calculateStrokeWidth =
+      this.props.calculateStrokeWidth || defaultcalculateStrokeWidth;
+
     const node = d3.select(this.node);
     if (node.select('g.regions').empty()) {
       this.init();
@@ -77,18 +87,24 @@ class Map extends Component {
       .append('path')
       .attr('class', 'region')
       .attr('d', path)
-      .attr('fill', this.props.calculateFill)
-      .attr('stroke-width', 1.5 / this.props.scale)
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      })
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
 
-    regionPaths.attr('stroke-width', 1.5 / this.props.scale);
+    regionPaths
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      });
   }
 
   render() {
-    console.log('Map render');
-
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }

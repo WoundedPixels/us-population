@@ -1,27 +1,30 @@
 import React from 'react';
 
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { linkTo } from '@storybook/addon-links';
 
 import { topoToGeo } from '../../DataManipulation';
 
-import Map from './Map';
+import CentroidCircleMap from './CentroidCircleMap';
 import Tooltip from '../Tooltip/Tooltip';
 
 const buildTooltip = d => <div>Static tooltip</div>;
-const calculateFill = d => 'blue';
+
+const calculateArea = d => {
+  return Math.random() * 400;
+};
+
+const calculateFill = d => 'yellow';
 const calculateStroke = d => 'black';
 
 const calculateStrokeWidth = d => {
-  return Math.random() * 3;
+  return Math.random() * 2;
 };
 
 const topoJSON = require('../../../public/topo-json/us-10m.json');
 const statesGeoJSON = topoToGeo(topoJSON, 'states');
 const countiesGeoJSON = topoToGeo(topoJSON, 'counties');
 
-storiesOf('Map', module)
+storiesOf('CentroidCircleMap', module)
   .addDecorator(story =>
     <div>
       <Tooltip />
@@ -31,25 +34,31 @@ storiesOf('Map', module)
     </div>,
   )
   .add('empty', () => {
-    return <Map width="950" />;
+    return <CentroidCircleMap width="950" />;
   })
   .add('no optional parameters', () => {
     return (
-      <Map
+      <CentroidCircleMap
         regionsGeoJSON={statesGeoJSON}
         buildTooltip={buildTooltip}
+        calculateArea={calculateArea}
+        minScale="0"
+        maxScale="1000000"
         scale="1"
       />
     );
   })
   .add('all optional parameters', () => {
     return (
-      <Map
+      <CentroidCircleMap
         regionsGeoJSON={statesGeoJSON}
         buildTooltip={buildTooltip}
+        calculateArea={calculateArea}
         calculateFill={calculateFill}
         calculateStroke={calculateStroke}
         calculateStrokeWidth={calculateStrokeWidth}
+        minScale="0"
+        maxScale="1000000"
         scale="1"
       />
     );

@@ -7,13 +7,16 @@ import Tooltip from '../Tooltip/Tooltip';
 
 import './CentroidCircleMap.css';
 
+const defaultCalculateFill = d => '#D3D3D3';
+const defaultcalculateStroke = d => 'none';
+const defaultcalculateStrokeWidth = d => 0;
+
 class CentroidCircleMap extends Component {
+  clearTooltip: Function;
   init: Function;
+  node: Object;
   update: Function;
   updateTooltip: Function;
-  clearTooltip: Function;
-  node: Object;
-  sortedRegionsGeoJSON: [];
 
   constructor(props: Object) {
     super(props);
@@ -45,10 +48,6 @@ class CentroidCircleMap extends Component {
     this.props.regionsGeoJSON.forEach(region => {
       region.properties.centroid = path.centroid(region);
     });
-
-    this.sortedRegionsGeoJSON = this.props.regionsGeoJSON.sort((a, b) => {
-      return b.properties.allAgesCount - a.properties.allAgesCount;
-    });
   }
 
   readyCheck() {
@@ -70,6 +69,13 @@ class CentroidCircleMap extends Component {
       return;
     }
 
+    const calculateArea = this.props.calculateArea;
+    const calculateFill = this.props.calculateFill || defaultCalculateFill;
+    const calculateStroke =
+      this.props.calculateStroke || defaultcalculateStroke;
+    const calculateStrokeWidth =
+      this.props.calculateStrokeWidth || defaultcalculateStrokeWidth;
+
     const node = d3.select(this.node);
     if (node.select('g.bubbles').empty()) {
       this.init();
@@ -77,9 +83,12 @@ class CentroidCircleMap extends Component {
 
     const bubblesG = node.select('g.bubbles');
 
-    const circles = bubblesG
-      .selectAll('circle.bubble')
-      .data(this.sortedRegionsGeoJSON);
+    const regions = [...this.props.regionsGeoJSON];
+    regions.sort((a, b) => {
+      return b.properties.allAgesCount - a.properties.allAgesCount;
+    });
+
+    const circles = bubblesG.selectAll('circle.bubble').data(regions);
 
     circles
       .enter()
@@ -92,27 +101,29 @@ class CentroidCircleMap extends Component {
         return d.properties.centroid[1];
       })
       .attr('r', d => {
-        return (
-          Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
-        );
+        return Math.sqrt(calculateArea(d) / Math.PI) / this.props.scale;
       })
-      .attr('fill', this.props.calculateFill)
-      // .attr('stroke-width', 1 / this.props.scale)
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      })
       .on('mouseover', this.updateTooltip)
       .on('mousemove', this.updateTooltip)
       .on('mouseleave', this.clearTooltip);
 
-    // circles.attr('stroke-width', 1.5 / this.props.scale);
-    circles.attr('r', d => {
-      return (
-        Math.sqrt(this.props.calculateArea(d) / Math.PI) / this.props.scale
-      );
-    });
+    circles
+      .attr('r', d => {
+        return Math.sqrt(calculateArea(d) / Math.PI) / this.props.scale;
+      })
+      .attr('fill', calculateFill)
+      .attr('stroke', calculateStroke)
+      .attr('stroke-width', d => {
+        return calculateStrokeWidth(d) / this.props.scale;
+      });
   }
 
   render() {
-    console.log('CentroidCircleMap render');
-
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }
