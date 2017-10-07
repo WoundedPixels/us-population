@@ -7,17 +7,9 @@ import Tooltip from '../Tooltip/Tooltip';
 
 import './Map.css';
 
-const defaultCalculateFill = d => {
-  return '#D3D3D3';
-};
-
-const defaultcalculateStroke = d => {
-  return '#333';
-};
-
-const defaultcalculateStrokeWidth = d => {
-  return 1.5;
-};
+const defaultCalculateFill = d => '#D3D3D3';
+const defaultcalculateStroke = d => '#333';
+const defaultcalculateStrokeWidth = d => 1.5;
 
 class Map extends Component {
   init: Function;
@@ -113,8 +105,6 @@ class Map extends Component {
   }
 
   render() {
-    console.log('Map render');
-
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }

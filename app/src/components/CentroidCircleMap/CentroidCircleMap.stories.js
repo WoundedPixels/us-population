@@ -7,21 +7,14 @@ import { topoToGeo } from '../../DataManipulation';
 import CentroidCircleMap from './CentroidCircleMap';
 import Tooltip from '../Tooltip/Tooltip';
 
-const buildTooltip = d => {
-  return 'Static tooltip';
-};
+const buildTooltip = d => <div>Static tooltip</div>;
 
 const calculateArea = d => {
   return Math.random() * 400;
 };
 
-const calculateFill = d => {
-  return 'yellow';
-};
-
-const calculateStroke = d => {
-  return 'black';
-};
+const calculateFill = d => 'yellow';
+const calculateStroke = d => 'black';
 
 const calculateStrokeWidth = d => {
   return Math.random() * 2;

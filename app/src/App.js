@@ -38,13 +38,13 @@ const neutralFill = d => {
   return d.properties.childrenPovertyRatio < 0.35 ? '#EEEEEE' : '#FFFFFF';
 };
 
-const calculateStroke = d => {
-  return 'black';
-};
+const noFill = d => 'none';
 
-const calculateStrokeWidth = d => {
-  return 0.5;
-};
+const blackStroke = d => 'black';
+const greyStroke = d => '#444';
+
+const thinStrokeWidth = d => 0.5;
+const thickStrokeWidth = d => 2;
 
 const buildTooltip = d => {
   const {
@@ -159,17 +159,7 @@ class App extends Component {
               buildTooltip={buildTooltip}
               calculateFill={neutralFill}
               minScale="0"
-              maxScale="1000000"
-            />
-            <CentroidCircleMap
-              buildTooltip={buildTooltip}
-              calculateArea={calculateArea}
-              calculateFill={calculateFill}
-              calculateStroke={calculateStroke}
-              calculateStrokeWidth={calculateStrokeWidth}
               maxScale="2"
-              minScale="0"
-              regionsGeoJSON={this.state.statesGeoJSON}
             />
             <Map
               regionsGeoJSON={this.state.countiesGeoJSON}
@@ -178,12 +168,31 @@ class App extends Component {
               minScale="2"
               maxScale="1000000"
             />
+            <Map
+              regionsGeoJSON={this.state.statesGeoJSON}
+              buildTooltip={buildTooltip}
+              calculateFill={noFill}
+              calculateStroke={blackStroke}
+              calculateStrokeWidth={thickStrokeWidth}
+              minScale="2"
+              maxScale="1000000"
+            />
             <CentroidCircleMap
               buildTooltip={buildTooltip}
               calculateArea={calculateArea}
               calculateFill={calculateFill}
-              calculateStroke={calculateStroke}
-              calculateStrokeWidth={calculateStrokeWidth}
+              calculateStroke={greyStroke}
+              calculateStrokeWidth={thinStrokeWidth}
+              maxScale="2"
+              minScale="0"
+              regionsGeoJSON={this.state.statesGeoJSON}
+            />
+            <CentroidCircleMap
+              buildTooltip={buildTooltip}
+              calculateArea={calculateArea}
+              calculateFill={calculateFill}
+              calculateStroke={greyStroke}
+              calculateStrokeWidth={thinStrokeWidth}
               maxScale="1000000"
               minScale="2"
               regionsGeoJSON={this.state.countiesGeoJSON}

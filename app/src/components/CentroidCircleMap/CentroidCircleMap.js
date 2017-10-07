@@ -7,23 +7,14 @@ import Tooltip from '../Tooltip/Tooltip';
 
 import './CentroidCircleMap.css';
 
-const defaultCalculateFill = d => {
-  return '#D3D3D3';
-};
-
-const defaultcalculateStroke = d => {
-  return 'none';
-};
-
-const defaultcalculateStrokeWidth = d => {
-  return 0;
-};
+const defaultCalculateFill = d => '#D3D3D3';
+const defaultcalculateStroke = d => 'none';
+const defaultcalculateStrokeWidth = d => 0;
 
 class CentroidCircleMap extends Component {
   clearTooltip: Function;
   init: Function;
   node: Object;
-  sortedRegionsGeoJSON: [];
   update: Function;
   updateTooltip: Function;
 
@@ -56,10 +47,6 @@ class CentroidCircleMap extends Component {
 
     this.props.regionsGeoJSON.forEach(region => {
       region.properties.centroid = path.centroid(region);
-    });
-
-    this.sortedRegionsGeoJSON = this.props.regionsGeoJSON.sort((a, b) => {
-      return b.properties.allAgesCount - a.properties.allAgesCount;
     });
   }
 
@@ -96,9 +83,12 @@ class CentroidCircleMap extends Component {
 
     const bubblesG = node.select('g.bubbles');
 
-    const circles = bubblesG
-      .selectAll('circle.bubble')
-      .data(this.sortedRegionsGeoJSON);
+    const regions = [...this.props.regionsGeoJSON];
+    regions.sort((a, b) => {
+      return b.properties.allAgesCount - a.properties.allAgesCount;
+    });
+
+    const circles = bubblesG.selectAll('circle.bubble').data(regions);
 
     circles
       .enter()
@@ -134,8 +124,6 @@ class CentroidCircleMap extends Component {
   }
 
   render() {
-    console.log('CentroidCircleMap render');
-
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }

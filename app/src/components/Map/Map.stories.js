@@ -9,17 +9,9 @@ import { topoToGeo } from '../../DataManipulation';
 import Map from './Map';
 import Tooltip from '../Tooltip/Tooltip';
 
-const buildTooltip = d => {
-  return 'Static tooltip';
-};
-
-const calculateFill = d => {
-  return 'blue';
-};
-
-const calculateStroke = d => {
-  return 'black';
-};
+const buildTooltip = d => <div>Static tooltip</div>;
+const calculateFill = d => 'blue';
+const calculateStroke = d => 'black';
 
 const calculateStrokeWidth = d => {
   return Math.random() * 3;
