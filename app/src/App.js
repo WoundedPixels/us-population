@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import { interpolateYlOrRd } from 'd3-scale-chromatic';
+import { RadioGroup, Radio } from 'react-mdl';
 
 import ZoomableGroup from './components/ZoomableGroup/ZoomableGroup';
 import CentroidCircleMap from './components/CentroidCircleMap/CentroidCircleMap';
@@ -21,23 +22,6 @@ const BASE_PATH =
 
 const colorScale = d3.scaleSequential(interpolateYlOrRd).domain([0.1, 0.4]);
 
-const calculateArea = d => {
-  if (!d.properties || !d.properties.allAgesCount) {
-    console.log('no population', JSON.stringify(d));
-  }
-
-  const count = d.properties.allAgesCount || 0;
-  return count / 2500;
-};
-
-const calculateFill = d => {
-  return colorScale(d.properties.childrenPovertyRatio);
-};
-
-const neutralFill = d => {
-  return d.properties.childrenPovertyRatio < 0.35 ? '#EEEEEE' : '#FFFFFF';
-};
-
 const noFill = d => 'none';
 
 const blackStroke = d => 'black';
@@ -46,9 +30,8 @@ const greyStroke = d => '#444';
 const thinStrokeWidth = d => 0.5;
 const thickStrokeWidth = d => 2;
 
-const buildTooltip = d => {
+const childrenTooltip = d => {
   const {
-    allAgesCount,
     childrenCount,
     childrenPovertyRatio,
     childrenPovertyCount,
@@ -67,7 +50,6 @@ const buildTooltip = d => {
         label="Childhood Poverty Rate:"
         value={d3.format('.1%')(childrenPovertyRatio)}
       />
-      <Tip label="Population:" value={d3.format(',')(allAgesCount)} />
       <Tip label="Children:" value={d3.format(',')(childrenCount)} />
       <Tip
         label="Children in Poverty:"
@@ -77,19 +59,128 @@ const buildTooltip = d => {
   );
 };
 
+const adultTooltip = d => {
+  const {
+    adultCount,
+    adultPovertyCount,
+    adultPovertyRatio,
+    name,
+    stateAbbreviation,
+  } = d.properties;
+
+  const fullname = name.includes('County')
+    ? `${name}, ${stateAbbreviation}`
+    : name;
+
+  return (
+    <Tips>
+      <Tip label={fullname} />
+      <Tip
+        label="Adult Poverty Rate:"
+        value={d3.format('.1%')(adultPovertyRatio)}
+      />
+      <Tip label="Adult Population:" value={d3.format(',')(adultCount)} />
+      <Tip
+        label="Adults in Poverty:"
+        value={d3.format(',')(adultPovertyCount)}
+      />
+    </Tips>
+  );
+};
+
+const allAgesTooltip = d => {
+  const {
+    allAgesCount,
+    allAgesPovertyCount,
+    allAgesPovertyRatio,
+    name,
+    stateAbbreviation,
+  } = d.properties;
+
+  const fullname = name.includes('County')
+    ? `${name}, ${stateAbbreviation}`
+    : name;
+
+  return (
+    <Tips>
+      <Tip label={fullname} />
+      <Tip
+        label="Poverty Rate:"
+        value={d3.format('.1%')(allAgesPovertyRatio)}
+      />
+      <Tip label="Population:" value={d3.format(',')(allAgesCount)} />
+      <Tip
+        label="Population in Poverty:"
+        value={d3.format(',')(allAgesPovertyCount)}
+      />
+    </Tips>
+  );
+};
+
+const tooltipFunctions = {
+  adult: adultTooltip,
+  allAges: allAgesTooltip,
+  children: childrenTooltip,
+};
+
 class App extends Component {
-  state: {
-    countiesGeoJSON: Object,
-    statesGeoJSON: Object,
-  };
+  state: Object;
+
+  buildTooltip: Function;
+  calculateArea: Function;
+  calculateFill: Function;
+  calculateNeutralFill: Function;
+  onAgeSelection: Function;
 
   constructor(props: Object) {
     super(props);
 
+    this.buildTooltip = this.buildTooltip.bind(this);
+    this.calculateArea = this.calculateArea.bind(this);
+    this.calculateFill = this.calculateFill.bind(this);
+    this.calculateNeutralFill = this.calculateNeutralFill.bind(this);
+    this.onAgeSelection = this.onAgeSelection.bind(this);
+
     this.state = {
       countiesGeoJSON: Object,
       statesGeoJSON: Object,
+      selectedAge: String,
+      lastUpdate: Number,
     };
+
+    this.state.selectedAge = 'allAges';
+  }
+
+  buildTooltip(d: Object) {
+    const tipFunction = tooltipFunctions[this.state.selectedAge];
+    return tipFunction(d);
+  }
+
+  calculateArea(d: Object) {
+    const property = `${this.state.selectedAge}Count`;
+    if (!d.properties || !d.properties[property]) {
+      console.log('no population', JSON.stringify(d));
+    }
+
+    const count = d.properties[property] || 0;
+    return count / 2500;
+  }
+
+  calculateFill(d: Object) {
+    const property = `${this.state.selectedAge}PovertyRatio`;
+    return colorScale(d.properties[property]);
+  }
+
+  calculateNeutralFill(d: Object) {
+    const property = `${this.state.selectedAge}PovertyRatio`;
+    return d.properties[property] < 0.35 ? '#EEEEEE' : '#FFFFFF';
+  }
+
+  onAgeSelection(event: Object) {
+    this.setState({
+      lastUpdate: Date.now(),
+      selectedAge: event.currentTarget.value,
+    });
   }
 
   componentDidMount() {
@@ -120,6 +211,13 @@ class App extends Component {
           };
         });
 
+        povertyData.forEach(row => {
+          row.adultCount = row.allAgesCount - row.childrenCount;
+          row.adultPovertyCount =
+            row.allAgesPovertyCount - row.childrenPovertyCount;
+          row.adultPovertyRatio = row.adultPovertyCount / row.adultCount;
+        });
+
         const states = povertyData.filter(row => row.countyFIPS === '000');
         const counties = povertyData.filter(row => row.countyFIPS !== '000');
 
@@ -135,8 +233,12 @@ class App extends Component {
   }
 
   render() {
+    console.log('App render');
     const width = 950;
     const height = 0.65 * width;
+
+    const lastUpdate = this.state.lastUpdate || 0;
+    const selectedAge = this.state.selectedAge;
 
     const colorScaleProps = {
       blockHeight: 50,
@@ -149,56 +251,70 @@ class App extends Component {
     return (
       <div id="App">
         <div className="content">
-          <h1>Childhood Poverty in the US</h1>
+          <h1>Poverty in the US</h1>
         </div>
         <div className="content">
           <Tooltip />
           <ZoomableGroup width={width} height={height}>
             <Map
               regionsGeoJSON={this.state.statesGeoJSON}
-              buildTooltip={buildTooltip}
-              calculateFill={neutralFill}
+              buildTooltip={this.buildTooltip}
+              calculateFill={this.calculateNeutralFill}
+              lastUpdate={lastUpdate}
               minScale="0"
               maxScale="2"
             />
             <Map
               regionsGeoJSON={this.state.countiesGeoJSON}
-              buildTooltip={buildTooltip}
-              calculateFill={neutralFill}
+              buildTooltip={this.buildTooltip}
+              calculateFill={this.calculateNeutralFill}
+              lastUpdate={lastUpdate}
               minScale="2"
               maxScale="1000000"
             />
             <Map
               regionsGeoJSON={this.state.statesGeoJSON}
-              buildTooltip={buildTooltip}
+              buildTooltip={this.buildTooltip}
               calculateFill={noFill}
               calculateStroke={blackStroke}
               calculateStrokeWidth={thickStrokeWidth}
+              lastUpdate={lastUpdate}
               minScale="2"
               maxScale="1000000"
             />
             <CentroidCircleMap
-              buildTooltip={buildTooltip}
-              calculateArea={calculateArea}
-              calculateFill={calculateFill}
+              buildTooltip={this.buildTooltip}
+              calculateArea={this.calculateArea}
+              calculateFill={this.calculateFill}
               calculateStroke={greyStroke}
               calculateStrokeWidth={thinStrokeWidth}
+              lastUpdate={lastUpdate}
               maxScale="2"
               minScale="0"
               regionsGeoJSON={this.state.statesGeoJSON}
             />
             <CentroidCircleMap
-              buildTooltip={buildTooltip}
-              calculateArea={calculateArea}
-              calculateFill={calculateFill}
+              buildTooltip={this.buildTooltip}
+              calculateArea={this.calculateArea}
+              calculateFill={this.calculateFill}
               calculateStroke={greyStroke}
               calculateStrokeWidth={thinStrokeWidth}
+              lastUpdate={lastUpdate}
               maxScale="1000000"
               minScale="2"
               regionsGeoJSON={this.state.countiesGeoJSON}
             />
           </ZoomableGroup>
           <ColorScaleLegend {...colorScaleProps} />
+          <RadioGroup
+            name="ages"
+            value={selectedAge}
+            onChange={this.onAgeSelection}
+          >
+            <Radio value="allAges">All Ages</Radio>
+            <Radio value="adult">Adults</Radio>
+            <Radio value="children">Children</Radio>
+          </RadioGroup>
         </div>
         <div className="footer">
           Created by{' '}

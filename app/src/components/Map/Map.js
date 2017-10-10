@@ -36,7 +36,10 @@ class Map extends Component {
     if (!this.readyCheck()) {
       return true;
     }
-    return this.props.scale !== nextProps.scale;
+    return (
+      this.props.scale !== nextProps.scale ||
+      this.props.lastUpdate !== nextProps.lastUpdate
+    );
   }
 
   init() {
@@ -105,6 +108,7 @@ class Map extends Component {
   }
 
   render() {
+    console.log('Map render');
     if (!this.readyCheck()) {
       return <text transform="translate(50,50)">Loading</text>;
     }

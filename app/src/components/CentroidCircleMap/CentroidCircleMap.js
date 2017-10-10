@@ -36,7 +36,11 @@ class CentroidCircleMap extends Component {
     if (!this.readyCheck()) {
       return true;
     }
-    return this.props.scale !== nextProps.scale;
+
+    return (
+      this.props.scale !== nextProps.scale ||
+      this.props.lastUpdate !== nextProps.lastUpdate
+    );
   }
 
   init() {
